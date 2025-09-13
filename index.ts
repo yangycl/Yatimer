@@ -19,10 +19,6 @@ function updateTimer(): void {
         `${seconds.toString().padStart(2, '0')}.` +
         `${milliseconds.toString().padStart(2, '0')}`
     );
-    if (!isRunning) {
-        $("ul").append(`<li>${$("#timer").text()}</li>`);
-        return;
-    }
 }
 
 // 空白鍵事件
@@ -35,6 +31,10 @@ $(document).on('keydown', (e) => {
             isRunning = false;
             clearInterval(timerInterval);
             elapsedTime += Date.now() - startTime;
+                
+            $("ul").append(`<li>${$("#timer").text()}</li>`);
+                
+
         } else {
             // 開始計時
             isRunning = true;

@@ -19,6 +19,9 @@ function updateTimer(): void {
         `${seconds.toString().padStart(2, '0')}.` +
         `${milliseconds.toString().padStart(2, '0')}`
     );
+    if (!isRunning) {
+        $("ul").append(`<li>${$("#timer").text()}</li>`);
+    }
 }
 
 // 空白鍵事件

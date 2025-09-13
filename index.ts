@@ -21,6 +21,7 @@ function updateTimer(): void {
     );
     if (!isRunning) {
         $("ul").append(`<li>${$("#timer").text()}</li>`);
+        return;
     }
 }
 

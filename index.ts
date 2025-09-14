@@ -43,3 +43,15 @@ $(document).on('keydown', (e) => {
         }
     }
 });
+//打亂公式
+function shuffleArray(array: string[]): string[] {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+//wca公式
+var SC : string[] = shuffleArray(["U", "U'", "U2", "UW", "R", "R'","R2","RW", "D", "D'", "D2", "DW", "L", "L'", "L2", "LW", "F", "F'", "F2", "FW", "B", "B'", "B2", "BW"]);
+//顯示公式
+$('#scramble').text(SC.join(' '));

@@ -19,8 +19,17 @@
     </style>
 </head>
 <body>
+    <h1>YATIMER</h1>    
+    <div id="scramble" style="font-size: 20px; margin-bottom: 20px;">按下打亂公式</div>
     <div id="timer">00:00.00</div>
     <p>按下 <strong>空白鍵</strong> 開始 / 停止</p>
+    <button onclick="
+        SC = shuffleArray(['U', 'U\'', 'U2', 'UW', 'R', 'R\'', 'R2', 'RW', 'D', 'D\'', 'D2', 'DW', 'L', 'L\'', 'L2', 'LW', 'F', 'F\'', 'F2', 'FW', 'B', 'B\'', 'B2', 'BW']);
+        $('#scramble').text(SC.join(' '));
+        " style="background-color: red; color: black;">
+        打亂公式
+    </button>
+    <br><br>
     <ul>
 
     </ul>

@@ -157,7 +157,9 @@ $('#ao5btn').on('click', () => {
         return;
     }
     function toTimeString(m, s) {
-        return "Ao5: " + (m < 10 ? "0" + m : m) + ':' + (s < 10 ? "0" + s : s.toFixed(2));
+        const formattedMin = m.toString().padStart(2, '0');
+        const formattedSec = s.toFixed(2).padStart(5, '0'); // e.g. 04.50
+        return `Ao5: ${formattedMin}:${formattedSec}`;
     }
     alert(toTimeString(m, s));
     $("ul").append(`<li>${toTimeString(m, s)}</li>`);

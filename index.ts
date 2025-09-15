@@ -128,13 +128,14 @@ class Ao5maxmin {
             alert("DNF");
             return;
         }
-        if (this.max===undefined||this.min===undefined) throw new Error("max或min未定義");
         let alltimes: number[] = li.map(t => t.alls);
         let min: number = Math.min(...alltimes);
         let max: number = Math.max(...alltimes);
 
         this.max = max;
-        this.min = min; 
+        this.min = min;
+        if (this.max===undefined||this.min===undefined) throw new Error("max或min未定義");
+ 
 
 
         

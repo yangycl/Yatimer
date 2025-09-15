@@ -122,13 +122,13 @@ class Ao5maxmin {
             alert("DNF");
             return;
         }
-        if (this.max === undefined || this.min === undefined)
-            throw new Error("max或min未定義");
         let alltimes = li.map(t => t.alls);
         let min = Math.min(...alltimes);
         let max = Math.max(...alltimes);
         this.max = max;
         this.min = min;
+        if (this.max === undefined || this.min === undefined)
+            throw new Error("max或min未定義");
     }
 }
 //計算Ao5

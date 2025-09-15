@@ -157,9 +157,12 @@ $('#ao5btn').on('click', () => {
         return;
     }
     function toTimeString(m, s) {
-        const formattedMin = m.toString().padStart(2, '0');
-        const formattedSec = s.toFixed(2).padStart(5, '0'); // e.g. 04.50
-        return `Ao5: ${formattedMin}:${formattedSec}`;
+        // 四捨五入到小數第二位，再轉字串填 0
+        const sFixed = s.toFixed(2);
+        const [secInt, secDec] = sFixed.split(".");
+        return "Ao5: " +
+            (m < 10 ? "0" + m : m) + ":" +
+            (parseInt(secInt) < 10 ? "0" + secInt : secInt) + "." + secDec;
     }
     alert(toTimeString(m, s));
     $("ul").append(`<li>${toTimeString(m, s)}</li>`);

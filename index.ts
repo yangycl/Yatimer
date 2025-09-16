@@ -183,3 +183,19 @@ $('#ao5btn').on('click', () :void => {
     alert(toTimeString(m,s));
     $("ul").append(`<li>${toTimeString(m,s)}</li>`);
 });
+if (!$("save")) throw new Error("找不到 save 元素");
+//儲存按鈕
+$("save").on('click', () => {
+    const json:string = JSON.stringify(li);
+    const savefct = (data:string, ) => {
+        fetch("epbzyginbymtlaumsllx.supabase.co/storage/v1/object/yatimer/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            }
+            ,body: data,
+        });
+    }
+    savefct(json);
+
+});

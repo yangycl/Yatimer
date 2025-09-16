@@ -1,3 +1,14 @@
+window.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM fully loaded and parsed');
+    //讀取資料
+    const savedData = localStorage.getItem("timerData");
+    if (savedData) {
+        li = JSON.parse(savedData); 
+        li.forEach(t => {
+            $("ul").append(`<li>${t.dnfboo ? "DNF" : (t.min.toString().padStart(2, '0') + ':' + t.s.toString().padStart(2, '0') + (t.plus2boo ? " +2" : ""))}</li>`);
+        });
+    }
+});
 // timer ts
 const divTimer: JQuery = $('#timer');
 
@@ -69,6 +80,9 @@ $(document).on('keydown', (e) => {
             let s = parseFloat(t[1]);
             li.push(new time(m,s));
             console.log(li);
+            localStorage.setItem("timerData", JSON.stringify(li));
+            console.log(localStorage.getItem("timerData"));
+            console.log(li[li.length-1].min,li[li.length-1].s);
             // 重設計時器
             elapsedTime = 0;
             divTimer.text('00:00.00');    

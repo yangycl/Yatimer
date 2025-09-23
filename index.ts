@@ -222,3 +222,10 @@ $("save").on('click', () => {
     savefct(json);
 
 });
+
+
+$("#del").on("click",()=>{
+    localStorage.removeItem("timerData");
+    li = [];
+    $("ul").empty();
+});

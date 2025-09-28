@@ -4,8 +4,8 @@ window.addEventListener('DOMContentLoaded', () => {
     //讀取資料
     const savedData = localStorage.getItem("timerData");
     if (savedData) {
-        li = JSON.parse(savedData);
-        li.forEach(t => {
+        roomobj = JSON.parse(savedData);
+        roomobj[currentRoomName].forEach(t => {
             $("ul").append(`<li>${t.dnfboo ? "DNF" : (t.min.toString().padStart(2, '0') + ':' + t.s.toString().padStart(2, '0') + (t.plus2boo ? " +2" : ""))}</li>`);
         });
     }
@@ -46,7 +46,10 @@ class time {
     }
 }
 //紀錄成績
-var li = [];
+var roomobj = {
+    "3*3*3": []
+};
+let currentRoomName = "3*3*3";
 function updateTimer() {
     const now = Date.now();
     const diff = now - startTime + elapsedTime;
@@ -70,11 +73,10 @@ $(document).on('keyup', (e) => {
             let t = $("#timer").text().split(':');
             let m = parseInt(t[0]);
             let s = parseFloat(t[1]);
-            li.push(new time(m, s));
-            console.log(li);
-            localStorage.setItem("timerData", JSON.stringify(li));
+            roomobj[currentRoomName].push(new time(m, s));
+            console.log(roomobj);
+            localStorage.setItem("timerData", JSON.stringify(roomobj));
             console.log(localStorage.getItem("timerData"));
-            console.log(li[li.length - 1].min, li[li.length - 1].s);
             // 重設計時器
             elapsedTime = 0;
             divTimer.text('00:00.00');
@@ -110,31 +112,33 @@ $('#scramble').text(SC.join(' '));
 if (!$('#\\+2btn'))
     throw new Error("找不到 +2btn 元素");
 $('#\\+2btn').on('click', () => {
-    if (li.length > 0) {
-        li[li.length - 1].plus2();
-        $("ul li").last().text(li[li.length - 1].dnfboo ? "DNF" : (li[li.length - 1].min.toString().padStart(2, '0') + ':' + li[li.length - 1].s.toString().padStart(2, '0') + (li[li.length - 1].plus2boo ? " +2" : "")));
-    }
+    const lastTime = roomobj[currentRoomName][roomobj[currentRoomName].length - 1];
+    $("ul").append(`<li>${lastTime.dnfboo ? "DNF" :
+        (lastTime.min.toString().padStart(2, '0') + ':' +
+            lastTime.s.toString().padStart(2, '0') +
+            (lastTime.plus2boo ? " +2" : ""))}</li>`);
 });
 if (!$('#dnfbtn'))
     throw new Error("找不到 dnfBtn 元素");
 //DNF按鈕   
 $('#dnfbtn').on('click', () => {
-    if (li.length > 0) {
-        li[li.length - 1].dnf();
+    if (roomobj[currentRoomName].length > 0) {
+        const lastIndex = roomobj[currentRoomName].length - 1;
+        roomobj[currentRoomName][lastIndex].dnf();
         $("ul li").last().text("DNF");
     }
 });
 class Ao5maxmin {
     max;
     min;
-    constructor(li) {
-        if (li.length < 5) {
+    constructor(times) {
+        if (times.length < 5) {
             alert("成績數量不足");
             return;
         }
         let dnfnum = 0;
-        for (let i = 0; i < 4; i++) {
-            if (li[i].alls == -1 || li[i].alls >= 600)
+        for (let i = 0; i < 5; i++) { // 應該檢查最近5個
+            if (times[i].alls == -1 || times[i].alls >= 600)
                 dnfnum++;
         }
         if (dnfnum >= 2) {
@@ -143,7 +147,7 @@ class Ao5maxmin {
             alert("DNF");
             return;
         }
-        let alltimes = li.map(t => t.alls);
+        let alltimes = times.map(t => t.alls);
         let min = Math.min(...alltimes);
         let max = Math.max(...alltimes);
         this.max = max;
@@ -156,21 +160,27 @@ class Ao5maxmin {
 if (!$('#ao5btn'))
     throw new Error("找不到 ao5Btn 元素");
 $('#ao5btn').on('click', () => {
-    if (li.length < 5)
-        throw new Error("成績數量不足");
-    var maxmin = new Ao5maxmin(li);
-    if (maxmin.max === undefined || maxmin.min === undefined)
-        throw new Error("max或min未定義");
-    const findmax = li.findIndex(t => t.alls === maxmin.max);
-    const findmin = li.findIndex(t => t.alls === maxmin.min);
+    const currentTimes = roomobj[currentRoomName];
+    if (currentTimes.length < 5) {
+        alert("成績數量不足");
+        return;
+    }
+    // 取最近5筆成績
+    const last5 = currentTimes.slice(-5);
+    var maxmin = new Ao5maxmin(last5);
+    if (maxmin.max === undefined || maxmin.min === undefined) {
+        alert("計算失敗");
+        return;
+    }
+    const findmax = last5.findIndex(t => t.alls === maxmin.max);
+    const findmin = last5.findIndex(t => t.alls === maxmin.min);
     let t_array = [];
-    for (let i = 0; i < li.length; i++) {
+    for (let i = 0; i < last5.length; i++) {
         if (i == findmax || i == findmin)
             continue;
-        t_array.push(li[i].alls);
+        t_array.push(last5[i].alls);
     }
-    var ao5 = t_array[0] + t_array[1] + t_array[2];
-    ao5 = ao5 / 3;
+    var ao5 = (t_array[0] + t_array[1] + t_array[2]) / 3;
     let m = Math.floor(ao5 / 60);
     let s = (ao5 % 60);
     if (ao5 === Infinity) {
@@ -178,7 +188,6 @@ $('#ao5btn').on('click', () => {
         return;
     }
     function toTimeString(m, s) {
-        // 四捨五入到小數第二位，再轉字串填 0
         const sFixed = s.toFixed(2);
         const [secInt, secDec] = sFixed.split(".");
         return "Ao5: " +
@@ -188,13 +197,11 @@ $('#ao5btn').on('click', () => {
     alert(toTimeString(m, s));
     $("ul").append(`<li>${toTimeString(m, s)}</li>`);
 });
-if (!$("save"))
-    throw new Error("找不到 save 元素");
 //儲存按鈕
-$("save").on('click', () => {
-    const json = JSON.stringify(li);
+$("#save").on('click', () => {
+    const json = JSON.stringify(roomobj);
     const savefct = (data) => {
-        fetch("epbzyginbymtlaumsllx.supabase.co/storage/v1/object/yatimer/", {
+        fetch("https://epbzyginbymtlaumsllx.supabase.co/storage/v1/object/yatimer/", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -204,8 +211,21 @@ $("save").on('click', () => {
     };
     savefct(json);
 });
+//刪除按鈕
 $("#del").on("click", () => {
-    localStorage.removeItem("timerData");
-    li = [];
+    // 只清除當前房間的成績
+    roomobj[currentRoomName] = [];
     $("ul").empty();
+    // 更新localStorage
+    localStorage.setItem("timerRoomData", JSON.stringify({
+        rooms: roomobj,
+        currentRoom: currentRoomName
+    }));
+});
+if ($("#roomnamebutton").length = 0)
+    throw new Error("找不到#roomnamebutton");
+//處理新房間
+$("#roomnamebutton").on("click", function () {
+    if ($("#roomname").length = 0)
+        throw new Error("找不到新房間名稱輸入欄element");
 });

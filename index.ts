@@ -251,24 +251,32 @@ if ($("#roomnamebutton").length === 0) throw new Error("找不到#roomnamebutton
 
 $("#roomnamebutton").on("click",function(){
     if ($("#roomname").length === 0) throw new Error("找不到新房間名稱輸入欄element");
-    let room:JQuery = $("#roomnametext");
-    if (room.length == 0) throw new Error("找不到#roomnametext");
-    const val = room.val();
-    if (typeof val !== "string") throw new Error("不是字串");
+    
+    const roomName = $("#roomname").val() as string; // 改：取 roomname 不是 roomnametext
+    if (typeof roomName !== "string") throw new Error("不是字串");
 
-    const roomname = val.trim() || "";
-    currentRoomName = roomname;
-    if (!roomobj[currentRoomName])roomobj[roomname] = []
-    else{
+    const trimmedRoomName = roomName.trim() || "";
+    if (!trimmedRoomName) return; // 空字串就直接返回
+    
+    currentRoomName = trimmedRoomName;
+    
+    if (!roomobj[currentRoomName]) {
+        roomobj[currentRoomName] = [];
+    } else {
         $("ul").empty();
         for (let index = 0; index < roomobj[currentRoomName].length; index++) {
             const element = roomobj[currentRoomName][index];
             
-            $("ul").append("<li>${element}</li>")
-            
+            $("ul").append(`<li>${element.dnfboo ? "DNF" : 
+                (element.min.toString().padStart(2, '0') + ':' + 
+                 element.s.toString().padStart(2, '0') + 
+                 (element.plus2boo ? " +2" : ""))}</li>`); // 改：反引號
         }
     }
-
-        
     
+    // 更新房間名稱顯示
+    $('#roomnametext').text(`房間: ${currentRoomName}`);
+    
+    // 清空輸入框
+    $("#roomname").val('');
 });

@@ -50,6 +50,7 @@ var roomobj = {
     "3*3*3": []
 };
 let currentRoomName = "3*3*3";
+$('#roomnametext').text(`房間: ${currentRoomName}`);
 function updateTimer() {
     const now = Date.now();
     const diff = now - startTime + elapsedTime;
@@ -70,9 +71,9 @@ $(document).on('keyup', (e) => {
             clearInterval(timerInterval);
             elapsedTime += Date.now() - startTime;
             $("ul").append(`<li>${$("#timer").text()}</li>`);
-            let t = $("#timer").text().split(':');
-            let m = parseInt(t[0]);
-            let s = parseFloat(t[1]);
+            const t = $("#timer").text().split(':');
+            const m = parseInt(t[0]);
+            const s = parseFloat(t[1]);
             roomobj[currentRoomName].push(new time(m, s));
             console.log(roomobj);
             localStorage.setItem("timerData", JSON.stringify(roomobj));
@@ -91,21 +92,21 @@ $(document).on('keyup', (e) => {
 });
 //打亂公式
 function shuffleArray() {
-    let face = ["U", "F", "R", "B", "L", "D"];
-    let turn = ["'", "2", ""];
-    let scramble = [];
+    const face = ["U", "F", "R", "B", "L", "D"];
+    const turn = ["'", "2", ""];
+    const scramble = [];
     let lastMove = ""; // 移到外面
     for (let i = 0; i < 15; i++) {
-        let filteredFaces = face.filter(f => f !== lastMove);
-        let facestring = filteredFaces[Math.floor(Math.random() * filteredFaces.length)];
-        let turnstring = turn[Math.floor(Math.random() * turn.length)];
+        const filteredFaces = face.filter(f => f !== lastMove);
+        const facestring = filteredFaces[Math.floor(Math.random() * filteredFaces.length)];
+        const turnstring = turn[Math.floor(Math.random() * turn.length)];
         scramble.push(facestring + turnstring);
         lastMove = facestring; // 更新 lastMove
     }
     return scramble;
 }
 //wca公式
-var SC = shuffleArray();
+const SC = shuffleArray();
 //顯示公式
 $('#scramble').text(SC.join(' '));
 //+2按鈕
@@ -147,9 +148,9 @@ class Ao5maxmin {
             alert("DNF");
             return;
         }
-        let alltimes = times.map(t => t.alls);
-        let min = Math.min(...alltimes);
-        let max = Math.max(...alltimes);
+        const alltimes = times.map(t => t.alls);
+        const min = Math.min(...alltimes);
+        const max = Math.max(...alltimes);
         this.max = max;
         this.min = min;
         if (this.max === undefined || this.min === undefined)
@@ -167,22 +168,22 @@ $('#ao5btn').on('click', () => {
     }
     // 取最近5筆成績
     const last5 = currentTimes.slice(-5);
-    var maxmin = new Ao5maxmin(last5);
+    const maxmin = new Ao5maxmin(last5);
     if (maxmin.max === undefined || maxmin.min === undefined) {
         alert("計算失敗");
         return;
     }
     const findmax = last5.findIndex(t => t.alls === maxmin.max);
     const findmin = last5.findIndex(t => t.alls === maxmin.min);
-    let t_array = [];
+    const t_array = [];
     for (let i = 0; i < last5.length; i++) {
         if (i == findmax || i == findmin)
             continue;
         t_array.push(last5[i].alls);
     }
-    var ao5 = (t_array[0] + t_array[1] + t_array[2]) / 3;
-    let m = Math.floor(ao5 / 60);
-    let s = (ao5 % 60);
+    const ao5 = (t_array[0] + t_array[1] + t_array[2]) / 3;
+    const m = Math.floor(ao5 / 60);
+    const s = (ao5 % 60);
     if (ao5 === Infinity) {
         alert("DNF");
         return;
@@ -222,10 +223,34 @@ $("#del").on("click", () => {
         currentRoom: currentRoomName
     }));
 });
-if ($("#roomnamebutton").length = 0)
+if ($("#roomnamebutton").length === 0)
     throw new Error("找不到#roomnamebutton");
 //處理新房間
 $("#roomnamebutton").on("click", function () {
-    if ($("#roomname").length = 0)
+    if ($("#roomname").length === 0)
         throw new Error("找不到新房間名稱輸入欄element");
+    const roomName = $("#roomname").val(); // 改：取 roomname 不是 roomnametext
+    if (typeof roomName !== "string")
+        throw new Error("不是字串");
+    const trimmedRoomName = roomName.trim() || "";
+    if (!trimmedRoomName)
+        return; // 空字串就直接返回
+    currentRoomName = trimmedRoomName;
+    if (!roomobj[currentRoomName]) {
+        roomobj[currentRoomName] = [];
+    }
+    else {
+        $("ul").empty();
+        for (let index = 0; index < roomobj[currentRoomName].length; index++) {
+            const element = roomobj[currentRoomName][index];
+            $("ul").append(`<li>${element.dnfboo ? "DNF" :
+                (element.min.toString().padStart(2, '0') + ':' +
+                    element.s.toString().padStart(2, '0') +
+                    (element.plus2boo ? " +2" : ""))}</li>`); // 改：反引號
+        }
+    }
+    // 更新房間名稱顯示
+    $('#roomnametext').text(`房間: ${currentRoomName}`);
+    // 清空輸入框
+    $("#roomname").val('');
 });

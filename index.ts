@@ -64,7 +64,7 @@ function updateTimer(): void {
 }
 
 // 空白鍵事件
-$(document).on('keydown', (e) => {
+$(document).on('keyup', (e) => {
     if (e.code === 'Space') {
         e.preventDefault(); // 防止捲動
 

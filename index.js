@@ -58,7 +58,7 @@ function updateTimer() {
         `${milliseconds.toString().padStart(2, '0')}`);
 }
 // 空白鍵事件
-$(document).on('keydown', (e) => {
+$(document).on('keyup', (e) => {
     if (e.code === 'Space') {
         e.preventDefault(); // 防止捲動
         if (isRunning) {

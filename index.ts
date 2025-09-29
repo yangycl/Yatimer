@@ -25,7 +25,7 @@ let timerInterval: number | undefined;
 let isRunning: boolean = false;
 let startTime: number = 0;
 let elapsedTime: number = 0;
-class time {
+class Time {
     dnfboo: boolean = false;
     plus2boo: boolean = false;
     min: number;
@@ -56,7 +56,7 @@ class time {
     }
 }
 //紀錄成績
-var roomobj: Record<string, time[]> = {
+var roomobj: Record<string, Time[]> = {
     "3*3*3": []
 };
 let currentRoomName: string = "3*3*3";
@@ -91,7 +91,8 @@ $(document).on('keyup', (e) => {
             const t = $("#timer").text().split(':');
             const m = parseInt(t[0]);
             const s = parseFloat(t[1]);
-            roomobj[currentRoomName].push(new time(m,s));
+            if (!roomobj[currentRoomName]) roomobj[currentRoomName] = [];
+            roomobj[currentRoomName].push(new Time(m,s));
             console.log(roomobj);
             localStorage.setItem("timerData", JSON.stringify(roomobj));
             console.log(localStorage.getItem("timerData"));
@@ -152,7 +153,7 @@ $('#dnfbtn').on('click', () => {
 class Ao5maxmin {
     max: number|undefined;
     min: number|undefined;
-    constructor(times: time[]) {    
+    constructor(times: Time[]) {    
         if (times.length < 5) {
             alert("成績數量不足");
             return;

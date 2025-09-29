@@ -24,7 +24,7 @@ let timerInterval;
 let isRunning = false;
 let startTime = 0;
 let elapsedTime = 0;
-class time {
+class Time {
     dnfboo = false;
     plus2boo = false;
     min;
@@ -82,7 +82,9 @@ $(document).on('keyup', (e) => {
             const t = $("#timer").text().split(':');
             const m = parseInt(t[0]);
             const s = parseFloat(t[1]);
-            roomobj[currentRoomName].push(new time(m, s));
+            if (!roomobj[currentRoomName])
+                roomobj[currentRoomName] = [];
+            roomobj[currentRoomName].push(new Time(m, s));
             console.log(roomobj);
             localStorage.setItem("timerData", JSON.stringify(roomobj));
             console.log(localStorage.getItem("timerData"));

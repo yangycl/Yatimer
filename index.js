@@ -42,15 +42,15 @@ class time {
         if (this.s >= 60) {
             this.s -= 60;
             this.min += 1;
-            this.alls += 2;
         }
+        this.alls += 2;
     }
     //處理DNF
     dnf() {
         this.min = -1;
         this.s = -1;
         this.dnfboo = true;
-        this.alls = -1;
+        this.alls = Infinity;
     }
 }
 //紀錄成績
@@ -147,7 +147,7 @@ class Ao5maxmin {
         }
         let dnfnum = 0;
         for (let i = 0; i < 5; i++) { // 應該檢查最近5個
-            if (times[i].alls == -1 || times[i].alls >= 600)
+            if (!isFinite(times[i].alls) || times[i].alls >= 600)
                 dnfnum++;
         }
         if (dnfnum >= 2) {

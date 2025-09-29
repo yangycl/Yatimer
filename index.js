@@ -1,24 +1,5 @@
 "use strict";
-window.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM fully loaded and parsed');
-    const savedData = localStorage.getItem("timerData");
-    if (savedData) {
-        roomobj = JSON.parse(savedData);
-        // 確保 currentRoomName 對應的房間存在
-        if (roomobj[currentRoomName]) {
-            roomobj[currentRoomName].forEach(t => {
-                $("ul").append(`<li>${t.dnfboo ? "DNF" :
-                    (t.min.toString().padStart(2, '0') + ':' +
-                        t.s.toString().padStart(2, '0') +
-                        (t.plus2boo ? " +2" : ""))}</li>`);
-            });
-        }
-    }
-    else {
-        // 如果沒有儲存資料，確保預設房間存在
-        roomobj = { "3*3*3": [] };
-    }
-}); // timer ts
+// timer ts
 const divTimer = $('#timer');
 let timerInterval;
 let isRunning = false;
@@ -58,6 +39,39 @@ var roomobj = {
     "3*3*3": []
 };
 let currentRoomName = "3*3*3";
+window.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM fully loaded and parsed');
+    const savedData = localStorage.getItem("timerData");
+    if (savedData) {
+        const parsed = JSON.parse(savedData);
+        roomobj = {};
+        for (const room in parsed) {
+            roomobj[room] = parsed[room].map((t) => {
+                const time = new Time(t.min, t.s);
+                time.dnfboo = t.dnfboo;
+                time.plus2boo = t.plus2boo;
+                time.alls = t.alls;
+                return time;
+            });
+        }
+    }
+    else {
+        roomobj = { "3*3*3": [] };
+    }
+    currentRoomName = Object.keys(roomobj)[0];
+    // 顯示房間名稱
+    $('#roomnametext').text(`房間: ${currentRoomName}`);
+    // 顯示時間紀錄
+    if (roomobj[currentRoomName]) {
+        $("ul").empty();
+        roomobj[currentRoomName].forEach(t => {
+            $("ul").append(`<li>${t.dnfboo ? "DNF" :
+                (t.min.toString().padStart(2, '0') + ':' +
+                    t.s.toString().padStart(2, '0') +
+                    (t.plus2boo ? " +2" : ""))}</li>`);
+        });
+    }
+});
 $('#roomnametext').text(`房間: ${currentRoomName}`);
 function updateTimer() {
     const now = Date.now();

@@ -1,15 +1,24 @@
 window.addEventListener('DOMContentLoaded', () => {
     console.log('DOM fully loaded and parsed');
-    //讀取資料
+    
     const savedData = localStorage.getItem("timerData");
     if (savedData) {
-        roomobj = JSON.parse(savedData); 
-        roomobj[currentRoomName].forEach(t => {
-            $("ul").append(`<li>${t.dnfboo ? "DNF" : (t.min.toString().padStart(2, '0') + ':' + t.s.toString().padStart(2, '0') + (t.plus2boo ? " +2" : ""))}</li>`);
-        });
+        roomobj = JSON.parse(savedData);
+        
+        // 確保 currentRoomName 對應的房間存在
+        if (roomobj[currentRoomName]) {
+            roomobj[currentRoomName].forEach(t => {
+                $("ul").append(`<li>${t.dnfboo ? "DNF" : 
+                    (t.min.toString().padStart(2, '0') + ':' + 
+                     t.s.toString().padStart(2, '0') + 
+                     (t.plus2boo ? " +2" : ""))}</li>`);
+            });
+        }
+    } else {
+        // 如果沒有儲存資料，確保預設房間存在
+        roomobj = {"3*3*3": []};
     }
-});
-// timer ts
+});// timer ts
 const divTimer: JQuery = $('#timer');
 
 let timerInterval: number | undefined;
@@ -241,10 +250,8 @@ $("#del").on("click",()=>{
     $("ul").empty();
     
     // 更新localStorage
-    localStorage.setItem("timerRoomData", JSON.stringify({
-        rooms: roomobj,
-        currentRoom: currentRoomName
-    }));
+    // 刪除按鈕
+    localStorage.setItem("timerData", JSON.stringify(roomobj));
 });
 if ($("#roomnamebutton").length === 0) throw new Error("找不到#roomnamebutton");
 //處理新房間
@@ -279,4 +286,6 @@ $("#roomnamebutton").on("click",function(){
     
     // 清空輸入框
     $("#roomname").val('');
+    // 加上這行：儲存到 localStorage
+    localStorage.setItem("timerData", JSON.stringify(roomobj));
 });

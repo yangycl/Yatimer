@@ -336,13 +336,13 @@ $("#upload_json").on("change", function(e){
     }
 
     reader.onload = (event) => {
-        const file = event.target?.result;
-        if (typeof file !== "string") {
+        const fileContent = event.target?.result;
+        if (typeof fileContent !== "string") {
             alert("檔案讀取錯誤");
             return;
         }
 
-        const init: { [key: string]: any } = JSON.parse(file);
+        const init: { [key: string]: any } = JSON.parse(fileContent);
 
         // 恢復方法
         roomobj = {};
@@ -362,6 +362,8 @@ $("#upload_json").on("change", function(e){
         // 顯示
         currentRoomName = Object.keys(roomobj)[0];
         $("ul").empty();
+        // 顯示後面加上這行
+        $('#roomnametext').text(`房間: ${currentRoomName}`);
         for(let i = 0; i < roomobj[currentRoomName].length; i++) {
             const t = roomobj[currentRoomName][i];
             $("ul").append(`<li>${t.dnfboo ? "DNF" : 
@@ -372,6 +374,7 @@ $("#upload_json").on("change", function(e){
 
         // localStorage
         localStorage.setItem("timerData", JSON.stringify(roomobj));
+        alert("匯入成功!");
     };
 
     reader.readAsText(file);

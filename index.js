@@ -120,7 +120,7 @@ function shuffleArray() {
     const turn = ["'", "2", ""];
     const scramble = [];
     let lastMove = ""; // 移到外面
-    for (let i = 0; i < 15; i++) {
+    for (let i = 0; i < 20; i++) {
         const filteredFaces = face.filter(f => f !== lastMove);
         const facestring = filteredFaces[Math.floor(Math.random() * filteredFaces.length)];
         const turnstring = turn[Math.floor(Math.random() * turn.length)];
@@ -278,3 +278,53 @@ $("#roomnamebutton").on("click", function () {
     // 加上這行：儲存到 localStorage
     localStorage.setItem("timerData", JSON.stringify(roomobj));
 });
+if ($("#download_json").length === 0)
+    throw new Error("找不到#download_json");
+$("#download_json").on("click", function () {
+    const downloaddata = JSON.stringify(roomobj, null, 2);
+    const blob = new Blob([downloaddata], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    const roomNames = Object.keys(roomobj).join('_').replace(/\*/g, 'x');
+    a.download = `yatimer_${roomNames}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    alert("成績匯出已完成");
+});
+//0是falsy
+if (!$("#upload_json").length)
+    throw new Error("找不到#upload_json");
+$("#upload_json").on("change", function (e) {
+    const input = e.target;
+    const file = input.files?.[0]; // 取得選擇的檔案
+    const reader = new FileReader();
+    reader.onload = (event) => {
+        const file = event.target?.result;
+        if (typeof file !== "string") {
+            alert("檔案讀取錯誤");
+            return;
+        }
+        const init = JSON.parse(file);
+        //恢復方法
+        roomobj = {};
+        for (const room in init) {
+            roomobj[room] = [];
+            for (let i = 0; i < init[room].length - 1; i++) {
+                roomobj[room].push(init[room]);
+                roomobj[room][i].plus2 = new Time(1, 1).plus2;
+                roomobj[room][i].dnf = new Time(1, 1).dnf;
+            }
+        }
+        //顯示
+        currentRoomName = Object.keys(roomobj)[0];
+        for (let i = 0; i < roomobj[currentRoomName].length - 1; i++) {
+            $("ul").append(`<li>${roomobj[currentRoomName][i]}</li>`);
+        }
+        //localStorage
+        localStorage.setItem("timeData", JSON.stringify(roomobj));
+    };
+});
+//

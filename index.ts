@@ -325,39 +325,54 @@ $("#download_json").on("click",function(){
 });
 //0是falsy
 if(!$("#upload_json").length) throw new Error("找不到#upload_json") ;
-$("#upload_json").on("change",function(e){
+$("#upload_json").on("change", function(e){
     const input = e.target as HTMLInputElement;
     const file = input.files?.[0];  // 取得選擇的檔案
     const reader = new FileReader();
 
+    if (!file) {
+        alert("沒有選擇任何檔案！");
+        return;
+    }
+
     reader.onload = (event) => {
         const file = event.target?.result;
-        if(typeof file !== "string") {
+        if (typeof file !== "string") {
             alert("檔案讀取錯誤");
             return;
         }
-        const init:{ [key: string]: any }  = JSON.parse(file);
-        //恢復方法
-        roomobj = {}
+
+        const init: { [key: string]: any } = JSON.parse(file);
+
+        // 恢復方法
+        roomobj = {};
         for (const room in init){
-            roomobj[room] = []
-            for(let i:number = 0;i < init[room].length-1; i++){
-                roomobj[room] .push( init[room]);
-                roomobj[room][i].plus2 = new Time(1,1).plus2;
-                roomobj[room][i].dnf = new Time(1,1).dnf;
-                
+            roomobj[room] = [];
+
+            for(let i: number = 0; i < init[room].length; i++) {
+                const t = init[room][i];
+                const time = new Time(t.min, t.s);
+                time.plus2boo = t.plus2boo;
+                time.dnfboo = t.dnfboo;
+                time.alls = t.alls;
+                roomobj[room].push(time);
             }
         }
-        //顯示
-        currentRoomName = Object.keys(roomobj)[0];
-        for(let i = 0; i<roomobj[currentRoomName].length-1; i++){
-            $("ul").append(`<li>${roomobj[currentRoomName][i]}</li>`);
 
+        // 顯示
+        currentRoomName = Object.keys(roomobj)[0];
+        $("ul").empty();
+        for(let i = 0; i < roomobj[currentRoomName].length; i++) {
+            const t = roomobj[currentRoomName][i];
+            $("ul").append(`<li>${t.dnfboo ? "DNF" : 
+                (t.min.toString().padStart(2, '0') + ':' + 
+                t.s.toString().padStart(2, '0') + 
+                (t.plus2boo ? " +2" : ""))}</li>`);
         }
 
-        //localStorage
-        localStorage.setItem("timeData",JSON.stringify(roomobj))
+        // localStorage
+        localStorage.setItem("timerData", JSON.stringify(roomobj));
+    };
 
-    }
-})
-//
+    reader.readAsText(file);
+});

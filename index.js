@@ -301,6 +301,10 @@ $("#upload_json").on("change", function (e) {
     const input = e.target;
     const file = input.files?.[0]; // 取得選擇的檔案
     const reader = new FileReader();
+    if (!file) {
+        alert("沒有選擇任何檔案！");
+        return;
+    }
     reader.onload = (event) => {
         const file = event.target?.result;
         if (typeof file !== "string") {
@@ -308,23 +312,31 @@ $("#upload_json").on("change", function (e) {
             return;
         }
         const init = JSON.parse(file);
-        //恢復方法
+        // 恢復方法
         roomobj = {};
         for (const room in init) {
             roomobj[room] = [];
-            for (let i = 0; i < init[room].length - 1; i++) {
-                roomobj[room].push(init[room]);
-                roomobj[room][i].plus2 = new Time(1, 1).plus2;
-                roomobj[room][i].dnf = new Time(1, 1).dnf;
+            for (let i = 0; i < init[room].length; i++) {
+                const t = init[room][i];
+                const time = new Time(t.min, t.s);
+                time.plus2boo = t.plus2boo;
+                time.dnfboo = t.dnfboo;
+                time.alls = t.alls;
+                roomobj[room].push(time);
             }
         }
-        //顯示
+        // 顯示
         currentRoomName = Object.keys(roomobj)[0];
-        for (let i = 0; i < roomobj[currentRoomName].length - 1; i++) {
-            $("ul").append(`<li>${roomobj[currentRoomName][i]}</li>`);
+        $("ul").empty();
+        for (let i = 0; i < roomobj[currentRoomName].length; i++) {
+            const t = roomobj[currentRoomName][i];
+            $("ul").append(`<li>${t.dnfboo ? "DNF" :
+                (t.min.toString().padStart(2, '0') + ':' +
+                    t.s.toString().padStart(2, '0') +
+                    (t.plus2boo ? " +2" : ""))}</li>`);
         }
-        //localStorage
-        localStorage.setItem("timeData", JSON.stringify(roomobj));
+        // localStorage
+        localStorage.setItem("timerData", JSON.stringify(roomobj));
     };
+    reader.readAsText(file);
 });
-//

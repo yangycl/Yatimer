@@ -28,11 +28,11 @@
     <div id="timer">00:00.00</div>
     <p>按下 <strong>空白鍵</strong> 開始 / 停止</p>
     <button onclick="
-        SC = shuffleArray();
-        $('#scramble').text(SC.join(' '));
+        const newSC = shuffleArray(currentRoomName);
+        $('#scramble').text(newSC.join(' '));
         " style="background-color: red; color: black;">
         打亂公式
-    </button>
+    </button>    
     <button id="del">刪除所有成績</button>
     <button id="+2btn">+2</button>
     <button id="dnfbtn">dnf</button>

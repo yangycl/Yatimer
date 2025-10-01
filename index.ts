@@ -126,13 +126,18 @@ $(document).on('keyup', (e) => {
     }
 });
 //打亂公式
-function shuffleArray(): string[] {
-    const face:string[] = ["U","F","R","B","L","D"];
+function shuffleArray(roomname:string): string[] {
+    const cubetype:string = roomname.includes("3*3*3")?"3*3*3":(
+        roomname.includes("2*2*2")?"2*2*2"
+        :"3*3*3"
+    );
+    const face:string[] = cubetype =="3*3*3" ?["U","F","R","B","L","D"]:["U","F","R"];
     const turn:string[] = ["'","2",""];
     const scramble:string[] = [];
     let lastMove:string = "";  // 移到外面
+    let count = cubetype == "3*3*3"?20:10;
     
-    for(let i = 0; i < 20 ; i++){
+    for(let i = 0; i < count ; i++){
         const filteredFaces = face.filter(f => f !== lastMove);
         const facestring:string = filteredFaces[Math.floor(Math.random()*filteredFaces.length)];
         const turnstring = turn[Math.floor(Math.random()*turn.length)];
@@ -143,7 +148,7 @@ function shuffleArray(): string[] {
     return scramble;
 }
 //wca公式
-const SC : string[] = shuffleArray();
+const SC : string[] = shuffleArray(currentRoomName);
 //顯示公式
 $('#scramble').text(SC.join(' '));
 //+2按鈕
@@ -307,6 +312,8 @@ $("#roomnamebutton").on("click",function(){
     $("#roomname").val('');
     // 加上這行：儲存到 localStorage
     localStorage.setItem("timerData", JSON.stringify(roomobj));
+    shuffleArray(currentRoomName);
+    
 });
 if($("#download_json").length === 0) throw new Error("找不到#download_json");
 $("#download_json").on("click",function(){

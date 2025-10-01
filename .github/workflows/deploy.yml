@@ -1,0 +1,30 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main  # 當你推送到 main 分支時就會自動執行
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
+
+      - name: Upload static site
+        uses: actions/upload-pages-artifact@v2
+        with:
+          path: ./  # 這是你要部署的資料夾，這裡假設是根目錄
+
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v2

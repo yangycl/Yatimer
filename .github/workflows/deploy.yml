@@ -15,16 +15,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 取得程式碼
+      - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: 設定 GitHub Pages
+      - name: Configure GitHub Pages
         uses: actions/configure-pages@v3
 
-      - name: 上傳靜態檔案
+      - name: Upload static site artifact
         uses: actions/upload-pages-artifact@v2
         with:
-          path: './'   # 你的網站靜態檔案根目錄，有 index.html
+          path: './'  # 靜態網站根目錄
 
-      - name: 部署到 GitHub Pages
+      - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v2

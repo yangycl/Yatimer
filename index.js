@@ -347,3 +347,30 @@ $("#upload_json").on("change", function (e) {
     };
     reader.readAsText(file);
 });
+//點擊房間名就進行改房間名動作
+$("#roomnametext").on("click", function () {
+    let newname = prompt("請輸入新房間名(改名動作)");
+    if (!newname) {
+        alert("你已取消動作");
+        return;
+    }
+    newname = newname.trim();
+    if (newname === currentRoomName || newname === "") {
+        alert("名稱無效");
+        return;
+    }
+    // 如果新名稱已存在，警告使用者避免覆蓋
+    if (newname in roomobj) {
+        const confirmOverwrite = confirm(`房間 "${newname}" 已存在，是否覆蓋？`);
+        if (!confirmOverwrite)
+            return;
+    }
+    // 改名
+    roomobj[newname] = roomobj[currentRoomName];
+    delete roomobj[currentRoomName];
+    currentRoomName = newname;
+    // 更新畫面與資料
+    $("#roomnametext").text(`房間名: ${currentRoomName}`);
+    shuffleArray(currentRoomName);
+    localStorage.setItem("timerData", JSON.stringify(roomobj));
+});

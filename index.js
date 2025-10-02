@@ -302,6 +302,7 @@ $("#download_json").on("click", function () {
 if (!$("#upload_json").length)
     throw new Error("找不到#upload_json");
 $("#upload_json").on("change", function (e) {
+    const origin = roomobj;
     const input = e.target;
     const file = input.files?.[0]; // 取得選擇的檔案
     const reader = new FileReader();
@@ -310,40 +311,54 @@ $("#upload_json").on("change", function (e) {
         return;
     }
     reader.onload = (event) => {
-        const fileContent = event.target?.result;
-        if (typeof fileContent !== "string") {
-            alert("檔案讀取錯誤");
-            return;
+        try {
+            const fileContent = event.target?.result;
+            if (typeof fileContent !== "string") {
+                alert("檔案讀取錯誤");
+                return;
+            }
+            const init = JSON.parse(fileContent);
+            // 恢復方法
+            roomobj = {};
+            for (const room in init) {
+                roomobj[room] = [];
+                for (let i = 0; i < init[room].length; i++) {
+                    const t = init[room][i];
+                    const time = new Time(t.min, t.s);
+                    time.plus2boo = t.plus2boo;
+                    time.dnfboo = t.dnfboo;
+                    time.alls = t.alls;
+                    roomobj[room].push(time);
+                }
+            }
+            // 顯示
+            currentRoomName = Object.keys(roomobj)[0];
+            $("ul").empty();
+            // 顯示後面加上這行
+            $('#roomnametext').text(`房間: ${currentRoomName}`);
+            for (let i = 0; i < roomobj[currentRoomName].length; i++) {
+                const t = roomobj[currentRoomName][i];
+                $("ul").append(`<li>${t.dnfboo ? "DNF" :
+                    (t.min.toString().padStart(2, '0') + ':' +
+                        t.s.toString().padStart(2, '0') +
+                        (t.plus2boo ? " +2" : ""))}</li>`);
+            }
+            // localStorage
+            localStorage.setItem("timerData", JSON.stringify(roomobj));
+            alert("匯入成功!");
         }
-        const init = JSON.parse(fileContent);
-        // 恢復方法
-        roomobj = {};
-        for (const room in init) {
-            roomobj[room] = [];
-            for (let i = 0; i < init[room].length; i++) {
-                const t = init[room][i];
-                const time = new Time(t.min, t.s);
-                time.plus2boo = t.plus2boo;
-                time.dnfboo = t.dnfboo;
-                time.alls = t.alls;
-                roomobj[room].push(time);
+        catch (err) {
+            alert(`匯入失敗!錯誤訊息:${err}`);
+            roomobj = origin;
+            currentRoomName = Object.keys(roomobj)[0];
+            $("#roomnametext").text(`房間:${currentRoomName}`);
+            for (let i = 0; i < roomobj[currentRoomName].length; i++) {
+                $("ul").append(`<li>${roomobj[currentRoomName][i].dnfboo ? "DNF" :
+                    `${roomobj[currentRoomName][i].min}:${roomobj[currentRoomName][i].s}`}
+                    ${roomobj[currentRoomName][i].plus2boo ? " +2" : ""}
+                    </li>`);
             }
         }
-        // 顯示
-        currentRoomName = Object.keys(roomobj)[0];
-        $("ul").empty();
-        // 顯示後面加上這行
-        $('#roomnametext').text(`房間: ${currentRoomName}`);
-        for (let i = 0; i < roomobj[currentRoomName].length; i++) {
-            const t = roomobj[currentRoomName][i];
-            $("ul").append(`<li>${t.dnfboo ? "DNF" :
-                (t.min.toString().padStart(2, '0') + ':' +
-                    t.s.toString().padStart(2, '0') +
-                    (t.plus2boo ? " +2" : ""))}</li>`);
-        }
-        // localStorage
-        localStorage.setItem("timerData", JSON.stringify(roomobj));
-        alert("匯入成功!");
     };
     reader.readAsText(file);
 });
@@ -371,7 +386,8 @@ $("#roomnametext").on("click", function () {
     currentRoomName = newname;
     // 更新畫面與資料
     $("#roomnametext").text(`房間名: ${currentRoomName}`);
-    shuffleArray(currentRoomName);
+    const newsc = shuffleArray(currentRoomName);
+    $("#scramble").text(newsc.join(" "));
     localStorage.setItem("timerData", JSON.stringify(roomobj));
 });
 //刪除所有房間

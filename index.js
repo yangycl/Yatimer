@@ -374,3 +374,14 @@ $("#roomnametext").on("click", function () {
     shuffleArray(currentRoomName);
     localStorage.setItem("timerData", JSON.stringify(roomobj));
 });
+//刪除所有房間
+if (!$("#delallroom").length)
+    throw new Error("找不到#delallroom");
+$("#delallroom").on("click", function () {
+    roomobj = { "3*3*3": [] };
+    currentRoomName = "3*3*3";
+    $("ul").empty();
+    $("#roomnametext").text(`房間:${currentRoomName}`);
+    //local
+    localStorage.setItem("timerData", JSON.stringify(roomobj));
+});

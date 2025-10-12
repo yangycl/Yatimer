@@ -162,12 +162,9 @@ $('#scramble').text(SC.join(' '));
 //+2按鈕
 if (!$('#\\+2btn')) throw new Error("找不到 +2btn 元素");
 $('#\\+2btn').on('click', () => {
-    const lastTime = roomobj[currentRoomName][roomobj[currentRoomName].length - 1];
-    $("ul").append(`<li>${lastTime.dnfboo ? "DNF" : 
-        (lastTime.min.toString().padStart(2, '0') + ':' + 
-        lastTime.s.toString().padStart(2, '0') + 
-        (lastTime.plus2boo ? " +2" : ""))
-    }</li>`);
+    let lastTime = roomobj[currentRoomName][roomobj[currentRoomName].length-1] ;
+    lastTime.plus2();
+    display_times(roomobj[currentRoomName])
 });
 if (!$('#dnfbtn')) throw new Error("找不到 dnfBtn 元素");
 //DNF按鈕   
@@ -299,17 +296,8 @@ $("#roomnamebutton").on("click",function(){
     
     currentRoomName = trimmedRoomName;
     
-    if (!roomobj[currentRoomName]) {
-        roomobj[currentRoomName] = [];
-    } else {
-        $("ul").empty();
-        for (let index = 0; index < roomobj[currentRoomName].length; index++) {
-            const element = roomobj[currentRoomName][index];
-            
-            display_times(roomobj[currentRoomName]); // 改：反引號
-        }
-    }
-    
+    roomobj[currentRoomName] ??= [];
+    display_times(roomobj[currentRoomName])
     // 更新房間名稱顯示
     $('#roomnametext').text(`房間: ${currentRoomName}`);
     
@@ -375,14 +363,9 @@ $("#upload_json").on("change", function(e){
 
             // 顯示
             currentRoomName = Object.keys(roomobj)[0];
-            $("ul").empty();
             // 顯示後面加上這行
             $('#roomnametext').text(`房間: ${currentRoomName}`);
-            for(let i = 0; i < roomobj[currentRoomName].length; i++) {
-                const t = roomobj[currentRoomName][i];
-                display_times(roomobj[currentRoomName]);
-            }
-
+            display_times(roomobj[currentRoomName])
             // localStorage
             localStorage.setItem("timerData", JSON.stringify(roomobj));
             alert("匯入成功!");
@@ -391,14 +374,7 @@ $("#upload_json").on("change", function(e){
             roomobj = origin;
             currentRoomName = Object.keys(roomobj)[0];
             $("#roomnametext").text(`房間:${currentRoomName}`);
-            for(let i = 0; i<roomobj[currentRoomName].length; i++){
-                $("ul").append(`<li>${roomobj[currentRoomName][i].dnfboo?"DNF":
-                        `${roomobj[currentRoomName][i].min}:${roomobj[currentRoomName][i].s}`
-                    }
-                    ${roomobj[currentRoomName][i].plus2boo?" +2":""}
-                    </li>`
-                );
-            }
+            display_times(roomobj[currentRoomName])
 
         }
     
@@ -445,5 +421,5 @@ $("#delallroom").on("click",function(){
     $("ul").empty();
     $("#roomnametext").text(`房間:${currentRoomName}`);
     //local
-    localStorage.setItem("timerData",JSON.stringify(roomobj));
+    localStorage.setItem("timerData", JSON.stringify(roomobj));
 });

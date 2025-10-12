@@ -68,21 +68,21 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // 顯示時間紀錄
     if (roomobj[currentRoomName]) {
-        display_times(roomobj[currentRoomName]);
+        displayTimes(roomobj[currentRoomName]);
     
     }
 });
 $('#roomnametext').text(`房間: ${currentRoomName}`);
-function format_Time(t: Time):string {
-    return t.dnfboo ? "DNF" :
-        (t.min.toString().padStart(2, '0') + ':' +
-            t.s.toString().padStart(2, '0') +
-            (t.plus2boo ? " +2" : "")) ;
+function formatTime(time: Time):string {
+    return time.dnfboo ? "DNF" :
+        (time.min.toString().padStart(2, '0') + ':' +
+            time.s.toString().padStart(2, '0') +
+            (time.plus2boo ? " +2" : "")) ;
 }
-function display_times (tarr:Time[]):void {
+function displayTimes (times:Time[]):void {
     $("ul").empty();
-    for (let t of tarr){
-        $("ul").append(`<li>${format_Time(t)}</li>`);
+    for (let t of times){
+        $("ul").append(`<li>${formatTime(t)}</li>`);
     }
 }
 
@@ -164,7 +164,8 @@ if (!$('#\\+2btn')) throw new Error("找不到 +2btn 元素");
 $('#\\+2btn').on('click', () => {
     let lastTime = roomobj[currentRoomName][roomobj[currentRoomName].length-1] ;
     lastTime.plus2();
-    display_times(roomobj[currentRoomName])
+    displayTimes(roomobj[currentRoomName]);
+    localStorage.setItem("timerData", JSON.stringify(roomobj));
 });
 if (!$('#dnfbtn')) throw new Error("找不到 dnfBtn 元素");
 //DNF按鈕   
@@ -174,6 +175,7 @@ $('#dnfbtn').on('click', () => {
         const lastIndex = roomobj[currentRoomName].length - 1;
         roomobj[currentRoomName][lastIndex].dnf();
         $("ul li").last().text("DNF");
+        localStorage.setItem("timerData", JSON.stringify(roomobj));
             
     }
 });
@@ -257,19 +259,6 @@ $('#ao5btn').on('click', () :void => {
 });
 
 //儲存按鈕
-$("#save").on('click', () => {
-    const json:string = JSON.stringify(roomobj);
-    const savefct = (data:string) => {
-        fetch("https://epbzyginbymtlaumsllx.supabase.co/storage/v1/object/yatimer/", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: data,
-        });
-    }
-    savefct(json);
-});
 
 //刪除按鈕
 $("#del").on("click",()=>{
@@ -297,7 +286,7 @@ $("#roomnamebutton").on("click",function(){
     currentRoomName = trimmedRoomName;
     
     roomobj[currentRoomName] ??= [];
-    display_times(roomobj[currentRoomName])
+    displayTimes(roomobj[currentRoomName])
     // 更新房間名稱顯示
     $('#roomnametext').text(`房間: ${currentRoomName}`);
     
@@ -365,7 +354,7 @@ $("#upload_json").on("change", function(e){
             currentRoomName = Object.keys(roomobj)[0];
             // 顯示後面加上這行
             $('#roomnametext').text(`房間: ${currentRoomName}`);
-            display_times(roomobj[currentRoomName])
+            displayTimes(roomobj[currentRoomName])
             // localStorage
             localStorage.setItem("timerData", JSON.stringify(roomobj));
             alert("匯入成功!");
@@ -374,7 +363,7 @@ $("#upload_json").on("change", function(e){
             roomobj = origin;
             currentRoomName = Object.keys(roomobj)[0];
             $("#roomnametext").text(`房間:${currentRoomName}`);
-            display_times(roomobj[currentRoomName])
+            displayTimes(roomobj[currentRoomName])
 
         }
     

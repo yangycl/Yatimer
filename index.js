@@ -63,16 +63,22 @@ window.addEventListener('DOMContentLoaded', () => {
     $('#roomnametext').text(`房間: ${currentRoomName}`);
     // 顯示時間紀錄
     if (roomobj[currentRoomName]) {
-        $("ul").empty();
-        roomobj[currentRoomName].forEach(t => {
-            $("ul").append(`<li>${t.dnfboo ? "DNF" :
-                (t.min.toString().padStart(2, '0') + ':' +
-                    t.s.toString().padStart(2, '0') +
-                    (t.plus2boo ? " +2" : ""))}</li>`);
-        });
+        display_times(roomobj[currentRoomName]);
     }
 });
 $('#roomnametext').text(`房間: ${currentRoomName}`);
+function format_Time(t) {
+    return t.dnfboo ? "DNF" :
+        (t.min.toString().padStart(2, '0') + ':' +
+            t.s.toString().padStart(2, '0') +
+            (t.plus2boo ? " +2" : ""));
+}
+function display_times(tarr) {
+    $("ul").empty();
+    for (let t of tarr) {
+        $("ul").append(`<li>${format_Time(t)}</li>`);
+    }
+}
 function updateTimer() {
     const now = Date.now();
     const diff = now - startTime + elapsedTime;
@@ -268,10 +274,7 @@ $("#roomnamebutton").on("click", function () {
         $("ul").empty();
         for (let index = 0; index < roomobj[currentRoomName].length; index++) {
             const element = roomobj[currentRoomName][index];
-            $("ul").append(`<li>${element.dnfboo ? "DNF" :
-                (element.min.toString().padStart(2, '0') + ':' +
-                    element.s.toString().padStart(2, '0') +
-                    (element.plus2boo ? " +2" : ""))}</li>`); // 改：反引號
+            display_times(roomobj[currentRoomName]); // 改：反引號
         }
     }
     // 更新房間名稱顯示
@@ -338,10 +341,7 @@ $("#upload_json").on("change", function (e) {
             $('#roomnametext').text(`房間: ${currentRoomName}`);
             for (let i = 0; i < roomobj[currentRoomName].length; i++) {
                 const t = roomobj[currentRoomName][i];
-                $("ul").append(`<li>${t.dnfboo ? "DNF" :
-                    (t.min.toString().padStart(2, '0') + ':' +
-                        t.s.toString().padStart(2, '0') +
-                        (t.plus2boo ? " +2" : ""))}</li>`);
+                display_times(roomobj[currentRoomName]);
             }
             // localStorage
             localStorage.setItem("timerData", JSON.stringify(roomobj));

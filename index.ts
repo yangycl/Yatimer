@@ -68,16 +68,24 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // 顯示時間紀錄
     if (roomobj[currentRoomName]) {
-        $("ul").empty();
-        roomobj[currentRoomName].forEach(t => {
-            $("ul").append(`<li>${t.dnfboo ? "DNF" : 
-                (t.min.toString().padStart(2, '0') + ':' + 
-                 t.s.toString().padStart(2, '0') + 
-                 (t.plus2boo ? " +2" : ""))}</li>`);
-        });
+        display_times(roomobj[currentRoomName]);
+    
     }
 });
 $('#roomnametext').text(`房間: ${currentRoomName}`);
+function format_Time(t: Time):string {
+    return t.dnfboo ? "DNF" :
+        (t.min.toString().padStart(2, '0') + ':' +
+            t.s.toString().padStart(2, '0') +
+            (t.plus2boo ? " +2" : "")) ;
+}
+function display_times (tarr:Time[]):void {
+    $("ul").empty();
+    for (let t of tarr){
+        $("ul").append(`<li>${format_Time(t)}</li>`);
+    }
+}
+
 function updateTimer(): void {
     const now = Date.now();
     const diff = now - startTime + elapsedTime;
@@ -154,7 +162,7 @@ $('#scramble').text(SC.join(' '));
 //+2按鈕
 if (!$('#\\+2btn')) throw new Error("找不到 +2btn 元素");
 $('#\\+2btn').on('click', () => {
-const lastTime = roomobj[currentRoomName][roomobj[currentRoomName].length - 1];
+    const lastTime = roomobj[currentRoomName][roomobj[currentRoomName].length - 1];
     $("ul").append(`<li>${lastTime.dnfboo ? "DNF" : 
         (lastTime.min.toString().padStart(2, '0') + ':' + 
         lastTime.s.toString().padStart(2, '0') + 
@@ -298,10 +306,7 @@ $("#roomnamebutton").on("click",function(){
         for (let index = 0; index < roomobj[currentRoomName].length; index++) {
             const element = roomobj[currentRoomName][index];
             
-            $("ul").append(`<li>${element.dnfboo ? "DNF" : 
-                (element.min.toString().padStart(2, '0') + ':' + 
-                 element.s.toString().padStart(2, '0') + 
-                 (element.plus2boo ? " +2" : ""))}</li>`); // 改：反引號
+            display_times(roomobj[currentRoomName]); // 改：反引號
         }
     }
     
@@ -375,10 +380,7 @@ $("#upload_json").on("change", function(e){
             $('#roomnametext').text(`房間: ${currentRoomName}`);
             for(let i = 0; i < roomobj[currentRoomName].length; i++) {
                 const t = roomobj[currentRoomName][i];
-                $("ul").append(`<li>${t.dnfboo ? "DNF" : 
-                    (t.min.toString().padStart(2, '0') + ':' + 
-                    t.s.toString().padStart(2, '0') + 
-                    (t.plus2boo ? " +2" : ""))}</li>`);
+                display_times(roomobj[currentRoomName]);
             }
 
             // localStorage

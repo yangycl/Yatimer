@@ -32,20 +32,23 @@
         $('#scramble').text(newSC.join(' '));
         " style="background-color: red; color: black;">
         打亂公式
-    </button>    
-    <button id="del">刪除所有成績</button>
-    <button id="delallroom">刪除所有房間</button>
-    <button id="+2btn">+2</button>
-    <button id="dnfbtn">dnf</button>
-    <button id="ao5btn">ao5</button>
-    <br><br>
-    <h2 id="roomnametext"></h2>
-    <ul>
+    </button> 
+    <div id="toolbox">   
+        <button id="del">刪除所有成績</button>
+        <button id="delallroom">刪除所有房間</button>
+        <button id="+2btn">+2</button>
+        <button id="dnfbtn">dnf</button>
+        <button id="ao5btn">ao5</button>
+        <br><br>
+        <h2 id="roomnametext"></h2>
+        <ul>
 
-    </ul>
-    <br>
-    <button id ="download_json">匯出</button>
-    <input id="upload_json" type="file"accept=".json"></button>
+        </ul>
+        <br>
+        <button id ="download_json">匯出</button>
+        <input id="upload_json" type="file"accept=".json"></button>
+    </div>
+    <button id="toolboxctrl">隱藏工具列</button>
     <script src="index.js"></script>
 </body>
 </html>

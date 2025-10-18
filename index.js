@@ -371,3 +371,21 @@ $("#delallroom").on("click", function () {
     //local
     localStorage.setItem("timerData", JSON.stringify(roomobj));
 });
+if ($("#toolboxctrl").length == 0) {
+    throw new Error("找不到#toolbokctrl");
+}
+var toolboxctrl = $("#toolboxctrl");
+if ($("#toolbox").length == 0) {
+    throw new Error("找不到#toolbox");
+}
+var toolbox = $("#toolbox");
+toolboxctrl.on("click", function () {
+    if (toolboxctrl.text() == "隱藏工具列") {
+        toolboxctrl.text("顯示工具列");
+        toolbox.hide();
+    }
+    else {
+        toolboxctrl.text("隱藏工具列");
+        toolbox.show();
+    }
+});

@@ -123,7 +123,9 @@ $(document).on('keyup', (e) => {
             console.log(localStorage.getItem("timerData"));
             // 重設計時器
             elapsedTime = 0;
-            divTimer.text('00:00.00');    
+            divTimer.text('00:00.00');
+            const newscramble = shuffleArray(currentRoomName);
+            $("#scramble").text(newscramble.join(" "));    
 
         } else {
             // 開始計時

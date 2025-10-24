@@ -285,6 +285,13 @@ $("#download_json").on("click", function () {
 //0是falsy
 if (!$("#upload_json").length)
     throw new Error("找不到#upload_json");
+//定義錯誤碼
+var errnum = {
+    TypeError: "404",
+    ReferenceError: "404",
+    SyntaxError: "500",
+    default: "500"
+};
 $("#upload_json").on("change", function (e) {
     const origin = roomobj;
     const input = e.target;
@@ -325,7 +332,8 @@ $("#upload_json").on("change", function (e) {
             alert("匯入成功!");
         }
         catch (err) {
-            alert(`匯入失敗!錯誤訊息:${err}`);
+            let geterrornum = errnum[err.name] || errnum.default;
+            alert(`匯入失敗!錯誤訊息:${geterrornum}`);
             roomobj = origin;
             currentRoomName = Object.keys(roomobj)[0];
             $("#roomnametext").text(`房間:${currentRoomName}`);
